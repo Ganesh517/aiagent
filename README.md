@@ -1,66 +1,53 @@
-***Developing AI Agent with PEAS Description***
+# Developing AI Agent with PEAS Description
 
-***AIM***
+## AIM
 
-```To find the PEAS description for the given AI problem and develop an AI agent.```
+To find the PEAS description for the given AI problem and develop an AI agent.
 
-THEORY
-A vacuum-cleaner world with just two locations.
-Each location can be clean or dirty.
-The agent can move left or right and can clean the square that it occupies.
+## THEORY
+A vacuum-cleaner world with just two locations.<br/>Each location can be clean or dirty.<br/>The agent can move left or right and can clean the square that it occupies.
 
-***PEAS DESCRIPTION***
 
-Agent Type	Performance Measure	Environment	Actuators	Sensors
-Vaccum Cleaner	Cleanliness, Number of Movements	Rooms	Steering	Location, Motion
-__DESIGN STEPS__
+## PEAS DESCRIPTION
+| Agent Type | Performance Measure | Environment | Actuators | Sensors |
+| :--------------: | :--------------: | :--------------: | :--------------: | :--------------: |
+| Vaccum Cleaner | Cleanliness, Number of Movements | Rooms, Dust | Steering, Cleanliness | Location, Motion |
 
-**STEP 1:**
-
+## DESIGN STEPS
+### STEP 1:
 Identifying the input:
 
-**STEP 2:**
-
+### STEP 2:
 Identifying the output:
 
-**STEP 3:**
-
+### STEP 3:
 Developing the PEAS description:
-
-**STEP 4:**
-
+### STEP 4:
 Implementing the AI agent
 
-**STEP 5:**
-
+### STEP 5:
 Measure the performance parameters
 
-__PROGRAM :__ 
-
-
-
-
+## PROGRAM
 ```python
+
+
 import random
 
 class Thing:
-    """
         This represents any physical object that can appear in an Environment.
-    """
 
     def is_alive(self):
-        """Things that are 'alive' should return true."""
+        Things that are 'alive' should return true.
         return hasattr(self, 'alive') and self.alive
 
     def show_state(self):
-        """Display the agent's internal state. Subclasses should override."""
+        Display the agent's internal state. Subclasses should override.
         print("I don't know how to show_state.")
 
 
 class Agent(Thing):
-    """
         An Agent is a subclass of Thing
-    """
 
     def __init__(self, program=None):
         self.alive = True
@@ -73,13 +60,11 @@ class Agent(Thing):
         return False
 
 def TableDrivenAgentProgram(table):
-    """
     [Figure 2.7]
     This agent selects an action based on the percept sequence.
     It is practical only for tiny domains.
     To customize it, provide as table a dictionary of all
     {percept_sequence:action} pairs.
-    """
     percepts = []
 
     def program(percept):
@@ -94,9 +79,7 @@ loc_A, loc_B = (0, 0), (1, 0)  # The two locations for the Vacuum world
 
 
 def TableDrivenVacuumAgent():
-    """
     Tabular approach towards vacuum world
-    """
     table = {((loc_A, 'Clean'),): 'Right',
              ((loc_A, 'Dirty'),): 'Suck',
              ((loc_B, 'Clean'),): 'Left',
@@ -111,7 +94,7 @@ def TableDrivenVacuumAgent():
 
 
 class Environment:
-    """Abstract class representing an Environment. 'Real' Environment classes
+    Abstract class representing an Environment. 'Real' Environment classes
     inherit from this. Your Environment will typically need to implement:
         percept:           Define the percept that an agent sees.
         execute_action:    Define the effects of executing an action.
@@ -119,33 +102,33 @@ class Environment:
     The environment keeps a list of .things and .agents (which is a subset
     of .things). Each agent has a .performance slot, initialized to 0.
     Each thing has a .location slot, even though some environments may not
-    need this."""
+    need this.
 
     def __init__(self):
         self.things = []
         self.agents = []
 
     def percept(self, agent):
-        """Return the percept that the agent sees at this point. (Implement this.)"""
+        Return the percept that the agent sees at this point. (Implement this.)
         raise NotImplementedError
 
     def execute_action(self, agent, action):
-        """Change the world to reflect this action. (Implement this.)"""
+        Change the world to reflect this action. (Implement this.)
         raise NotImplementedError
 
     def default_location(self, thing):
-        """Default location to place a new thing with unspecified location."""
+        Default location to place a new thing with unspecified location.
         return None
 
     def is_done(self):
-        """By default, we're done when we can't find a live agent."""
+        By default, we're done when we can't find a live agent.
         return not any(agent.is_alive() for agent in self.agents)
 
     def step(self):
-        """Run the environment for one time step. If the
+        Run the environment for one time step. If the
         actions and exogenous changes are independent, this method will
         do. If there are interactions between them, you'll need to
-        override this method."""
+        override this method.
         if not self.is_done():
             actions = []
             for agent in self.agents:
@@ -157,16 +140,16 @@ class Environment:
                 self.execute_action(agent, action)
 
     def run(self, steps=1000):
-        """Run the Environment for given number of time steps."""
+        Run the Environment for given number of time steps.
         for step in range(steps):
             if self.is_done():
                 return
             self.step()
 
     def add_thing(self, thing, location=None):
-        """Add a thing to the environment, setting its location. For
+        Add a thing to the environment, setting its location. For
         convenience, if thing is an agent program we make a new agent
-        for it. (Shouldn't need to override this.)"""
+        for it. (Shouldn't need to override this.)
         if not isinstance(thing, Thing):
             thing = Agent(thing)
         if thing in self.things:
@@ -179,7 +162,7 @@ class Environment:
                 self.agents.append(thing)
 
     def delete_thing(self, thing):
-        """Remove a thing from the environment."""
+        Remove a thing from the environment.
         try:
             self.things.remove(thing)
         except ValueError as e:
@@ -192,10 +175,10 @@ class Environment:
 
 
 class TrivialVacuumEnvironment(Environment):
-    """This environment has two locations, A and B. Each can be Dirty
+    This environment has two locations, A and B. Each can be Dirty
     or Clean. The agent perceives its location and the location's
     status. This serves as an example of how to implement a simple
-    Environment."""
+    Environment.
 
     def __init__(self):
         super().__init__()
@@ -206,12 +189,12 @@ class TrivialVacuumEnvironment(Environment):
         return [ TableDrivenVacuumAgent]
 
     def percept(self, agent):
-        """Returns the agent's location, and the location status (Dirty/Clean)."""
+        Returns the agent's location, and the location status (Dirty/Clean).
         return agent.location, self.status[agent.location]
 
     def execute_action(self, agent, action):
-        """Change agent's location and/or location's status; track performance.
-        Score 10 for each dirt cleaned; -1 for each move."""
+        Change agent's location and/or location's status; track performance.
+        Score 10 for each dirt cleaned; -1 for each move.
 
         if action=='Right':
             agent.location = loc_B
@@ -225,7 +208,7 @@ class TrivialVacuumEnvironment(Environment):
                 self.status[agent.location]='Clean'
 
     def default_location(self, thing):
-        """Agents start in either location at random."""
+        Agents start in either location at random.
         return random.choice([loc_A, loc_B])
         
 if __name__ == "__main__":
@@ -236,4 +219,14 @@ if __name__ == "__main__":
     environment.run(steps=10)
     print(environment.status)
     print(agent.performance)
-```
+```   
+ 
+## OUTPUT
+
+![output](https://github.com/Ganesh517/aiagent/blob/main/o.png)
+
+![output](https://github.com/Ganesh517/aiagent/blob/main/p..png)
+
+
+## RESULT
+Thus, an AI agent is developed.
